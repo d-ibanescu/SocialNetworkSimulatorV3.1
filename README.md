@@ -19,16 +19,17 @@ The DSMP Social Network Simulator can be used by researchers and users who want 
 
 ## Windows (JDK 8, 9+)
 1. Download/Install/Use your preferred version of Java 8 or 9 or higher.  
-2. Download Python 3.9 [here](https://www.python.org/downloads/)
-3. Download Apache Maven from your preferred Windows package manager (chocolatey/scoop), or manually [here](https://maven.apache.org/download.cgi) and follow this install guide [here](https://stackoverflow.com/questions/38549614/how-to-install-maven-in-windows)
-4. Run this command to install the dependencies: `mvn dependency:copy-dependencies -DoutputDirectory=lib/maven`
+2. Download 64-bit Python 3.9 [here](https://www.python.org/downloads/), if you do not have 64-bit Python for Windows you may have errors.
+3. Download Apache Maven from your preferred Windows package manager ([package link](https://community.chocolatey.org/packages/maven), chocolatey installation guide [here](https://chocolatey.org/install#install-step1)), or you can do it  manually [here](https://maven.apache.org/download.cgi) and follow this install guide [here](https://stackoverflow.com/questions/38549614/how-to-install-maven-in-windows)
+4. Run this command to install the dependencies: `mvn dependency:copy-dependencies -DoutputDirectory=lib`
 5. Run `start_modern.bat` for the first time, and onwards you can run `start.bat` (if you have problems go back to `start_modern.bat`)
 
 ## MacOS / Linux
 1. Install Java/JDK 8 or higher (JDK 8 preferred)
 2. Install/Activate a Python 3.9 install from your preferred source (package manager/ manual / other tool).
+   - You may encounter issues with Python dependencies, conda is the recommended solution for Python.
 3. Install Apache Maven from your preferred source (package manager or manual)
-4. Run this command to install the dependencies: `mvn dependency:copy-dependencies -DoutputDirectory=lib/maven`
-5. Run `build_and_start_modern.sh` to start the program for the first term
+4. Run this command to install the dependencies: `mvn dependency:copy-dependencies -DoutputDirectory=lib`
+5. Run `build_and_start_modern.sh` to start the program for the first time, or if you change anything in between running the program.
 6. Run `start_modern.sh` after if you don't modify the source code
 
