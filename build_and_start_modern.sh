@@ -82,6 +82,11 @@ if ! $PYTHON_CMD -c "import matplotlib" &> /dev/null; then
     $PYTHON_CMD -m pip install matplotlib
 fi
 
+if ! $PYTHON_CMD -c "import ipython" &> /dev/null; then
+    echo "Installing ipython..."
+    $PYTHON_CMD -m pip install ipython
+fi
+
 javac -nowarn -cp "lib/*" -d classes TwitterGatherDataFollowers/userRyersonU/*.java
 
 java $JAVA_OPTS -cp "lib/*:classes" jade.Boot $JADE_OPTS controller:TwitterGatherDataFollowers.userRyersonU.ControllerAgent

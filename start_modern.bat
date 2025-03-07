@@ -86,6 +86,12 @@ if %ERRORLEVEL% NEQ 0 (
     echo Installing matplotlib...
     %PYTHON_CMD% -m pip install matplotlib
 )
+
+%PYTHON_CMD% -c "import ipython" 2>nul
+if %ERRORLEVEL% NEQ 0 (
+    echo Installing ipython...
+    %PYTHON_CMD% -m pip install ipython
+)
 :: Compile Java code
 javac -nowarn -cp "lib/*" -d classes TwitterGatherDataFollowers/userRyersonU/*.java
 
