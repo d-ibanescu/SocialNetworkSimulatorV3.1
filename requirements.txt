@@ -1,0 +1,7 @@
+numpy
+gensim
+scikit-learn
+nltk
+seaborn
+matplotlib
+ipython
