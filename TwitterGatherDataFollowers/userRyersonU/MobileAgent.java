@@ -1334,6 +1334,125 @@ public class MobileAgent extends Agent {
 						String[] wordsFile4 = null;
 						String[] wordsFile5 = null;
 						String userFolloweeNum = "";
+						if (selectedFile != null) {
+							String selectedFileName = selectedFile.getName();
+							// Construct the target filename by prepending "name-number-"
+							String targetNameNumberFileName = importantStuffDirName + "name-number-" + selectedFileName;
+
+							File nameNumberFile = new File(targetNameNumberFileName);
+
+							System.out.println("Checking for file: " + nameNumberFile.getPath()); // Debugging output
+
+							// Check if the constructed file path exists and is a file
+							if (nameNumberFile.exists() && nameNumberFile.isFile()) {
+								System.out.println("Found file: " + targetNameNumberFileName); // Debugging output
+								try {
+									// 1. Find User's Number
+									BufferedReader readerUserNum = new BufferedReader(new FileReader(targetNameNumberFileName));
+									String lineUser;
+									String userNum = null; // Initialize user number for this scope
+									outerUser: while ((lineUser = readerUserNum.readLine()) != null) {
+										wordsFile3 = lineUser.split(" "); // Split line
+										if (wordsFile3.length > 1) { // Basic check for valid line format
+											for(String str: usersRec) { // usersRec needs to be accessible
+												if (wordsFile3[0].equals(str)){
+													userNum = wordsFile3[1]; // Store the found user number
+													System.out.println("User's Number ("+str+"):" + userNum);
+													break outerUser; // Found the user, exit loop
+												}
+											}
+										}
+									}
+									readerUserNum.close();
+
+									// 2. Find User's Original Followee's Number
+									BufferedReader readerOrigFollowee = new BufferedReader(new FileReader(targetNameNumberFileName));
+									String lineOrigFollowee;
+//									String[] wordsFile5; // Declare here
+									outerOrigFollowee: while ((lineOrigFollowee = readerOrigFollowee.readLine()) != null) {
+										wordsFile5 = lineOrigFollowee.split(" ");
+										if (wordsFile5.length > 1 && wordsFile5[0].equals(someTest3)){ // someTest3 needs to be accessible
+											System.out.println("User's Original Followee Number:" + wordsFile5[1]);
+											userFolloweeNum = wordsFile5[1]; // Assign to class/outer scope variable if needed elsewhere
+											break outerOrigFollowee;
+										}
+									}
+									readerOrigFollowee.close();
+
+									// 3. Find Selected Followee's Number
+									int iterNum = myGui.simulationSelectionBox.getSelectedIndex(); // Needs myGui
+									System.out.println("iterNum (Recommendation choice):  " + iterNum);
+									String selectedFolloweeNum = null; // Initialize
+									BufferedReader readerSelectedFollowee = new BufferedReader(new FileReader(targetNameNumberFileName));
+									String lineSelectedFollowee;
+									outerSelectedFollowee: while ((lineSelectedFollowee = readerSelectedFollowee.readLine()) != null) {
+										wordsFile4 = lineSelectedFollowee.split(" ");
+										if (wordsFile4.length > 1) {
+											// Determine the target followee name based on iterNum and sepTest
+											String targetFolloweeName = null;
+											if (iterNum == 0 && someTest3 != null) {
+												targetFolloweeName = someTest3; // 0 means original followee
+											} else if (iterNum > 0 && iterNum <= sepTest.size()) { // sepTest needs to be accessible (e.g., ArrayList<String>)
+												targetFolloweeName = sepTest.get(iterNum - 1); // Get from recommendations list
+											}
+
+											// Check if we have a target name and if it matches the current line
+											if (targetFolloweeName != null && wordsFile4[0].equals(targetFolloweeName)) {
+												selectedFolloweeNum = wordsFile4[1];
+												System.out.println("Selected Followee's Number ("+targetFolloweeName+"):" + selectedFolloweeNum);
+												break outerSelectedFollowee;
+											}
+										}
+									}
+									readerSelectedFollowee.close();
+
+									// 4. Write Edges
+									if (userNum != null && userFolloweeNum != null && !userFolloweeNum.isEmpty() && selectedFolloweeNum != null) {
+										try {
+											BufferedWriter writeredges = new BufferedWriter(new FileWriter(importantStuffDirName + "edges-numbers.txt",true));
+											writeredges.write(userNum + " " + userFolloweeNum + "\n"); // Original edge
+											writeredges.write(userNum + " " + selectedFolloweeNum); // New edge based on recommendation
+											writeredges.newLine();
+											writeredges.close();
+											System.out.println("Wrote edges for user " + userNum + " to edges-numbers.txt");
+										} catch (IOException e_edge) {
+											System.err.println("Error writing edges to edges-numbers.txt");
+											e_edge.printStackTrace();
+										}
+										// Trigger conversion script (ensure path is correct)
+										try {
+											 Process p = java.lang.Runtime.getRuntime().exec( "python "+ importantStuffDirName +"TXT2GMLv1.0/conversion.py" + "  " + importantStuffDirName +"edges-numbers");
+											// Add error/output stream handling if needed
+										} catch (/*IO*/Exception e_conv) {
+											System.err.println("Error executing conversion script");
+											e_conv.printStackTrace();
+										}
+
+									} else {
+										System.out.println("Skipping edge writing - required numbers not found.");
+									}
+
+
+								} catch (FileNotFoundException e) {
+									System.err.println("Error: Could not find or open file: " + targetNameNumberFileName);
+									e.printStackTrace();
+								} catch (IOException e) {
+									System.err.println("Error reading file: " + targetNameNumberFileName);
+									e.printStackTrace();
+								} catch (ArrayIndexOutOfBoundsException e) {
+									System.err.println("Error parsing line in file: " + targetNameNumberFileName + ". Check format (expected space delimiter).");
+									e.printStackTrace();
+								}
+							} else {
+								System.out.println("File not found or not a file: " + targetNameNumberFileName);
+								// Handle cases where the expected name-number file doesn't exist
+							}
+						} else {
+							System.out.println("No file selected in the GUI.");
+							// Handle case where no file was selected
+						}
+
+						/*
 						 if (selectedFile.getName().equals("Reduced_94k.txt")) {
 							try { 
 							    BufferedReader readerSepi3 = new BufferedReader(new FileReader(importantStuffDirName +"name-number-94.txt"));
@@ -1866,6 +1985,7 @@ public class MobileAgent extends Agent {
                                 {
                                   e.printStackTrace();
                                      }
+							*/
 							
 						// End of code added by Sepide 
 						
