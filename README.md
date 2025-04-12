@@ -17,10 +17,7 @@ Before you begin, ensure you have the following software installed and configure
 **Important:** Ensure that the executable commands (`git`, `python`/`python3` or `py`, `java`, `javac`, `mvn`) for the prerequisites are available in your system's PATH environment variable. The build script relies on being able to call these tools directly.
 ## Installation 
 
-1.  **Clone the Repository:**
-    ```bash
-    git clone [https://github.com/dsscorn/SocialNetworkSimulatorV3.git](https://github.com/dsscorn/SocialNetworkSimulatorV3.git)
-    ```
+1.  **Git Clone or Download the Repository**
 
 2.  **Navigate to the Project Directory:**
     ```bash
