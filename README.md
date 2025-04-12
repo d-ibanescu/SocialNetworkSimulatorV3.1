@@ -2,34 +2,146 @@
 
 The DSMP Social Network Simulator can be used by researchers and users who want to benefit from the simple UI provided in this simulation tool to examine and compare different ML-based applications in a simulated social network environment. 
 
+## Prerequisites
 
-# Installation 
+Before you begin, ensure you have the following software installed and configured on your system:
 
+1.  **Git:** For cloning the repository. ([Download Git](https://git-scm.com/downloads))
+2.  **Python (3.9 or 3.10):** The application requires **specifically Python 3.9 or 3.10**. Make sure the correct version is installed and accessible from your command line/terminal. ([Download Python](https://www.python.org/downloads/))
+    * *Tip:* Verify your installation by running `python --version` or `python3 --version`. On Windows, you might use `py --list` to see installed versions and `py -3.9` or `py -3.10` to invoke a specific one.
+3.  **Java Development Kit (JDK 8 or higher):** Required for compiling and running the Java code. JDK 8 is preferred, but 9+ should work with the script's compatibility flags. Ensure `java` and `javac` are in your system's PATH. ([Download OpenJDK - Adoptium recommended](https://adoptium.net/))
+    * *Tip:* Verify by running `java -version` and `javac -version`.
+4.  **Apache Maven:** Used by the build script to download Java dependencies. Ensure `mvn` is in your system's PATH. ([Download Maven](https://maven.apache.org/download.cgi) | [Installation Guide](https://maven.apache.org/install.html))
+    * *Tip:* Verify by running `mvn -version`.
 
-[//]: # (## Windows &#40;Original Instructions&#41;)
-[//]: # (Download and install Java8 at https://www.oracle.com/ca-en/java/technologies/javase/javase8-archive-downloads.html.)
+**Important:** Ensure that the executable commands (`git`, `python`/`python3` or `py`, `java`, `javac`, `mvn`) for the prerequisites are available in your system's PATH environment variable. The build script relies on being able to call these tools directly.
+## Installation 
 
-[//]: # (Downlaod mingw-get-setup.exe at https://sourceforge.net/projects/mingw/ and install C compiler.)
- 
-[//]: # (Download Python 3.9 at https://www.python.org/downloads/ and install it.  )
+1.  **Clone the Repository:**
+    ```bash
+    git clone [https://github.com/dsscorn/SocialNetworkSimulatorV3.git](https://github.com/dsscorn/SocialNetworkSimulatorV3.git)
+    ```
 
-[//]: # (git clone https://github.com/dsscorn/SocialNetworkSimulatorV3.git.)
+2.  **Navigate to the Project Directory:**
+    ```bash
+    cd SocialNetworkSimulatorV3
+    ```
 
-[//]: # (Extract the ZIP and Double-click start.bat)
+3.  **Run the Setup Command:**
+    This is the recommended first step. It will:
+    * Create a Python virtual environment (`.venv`) using your Python 3.9/3.10.
+    * Install required Python packages (from `requirements.txt`) into the virtual environment.
+    * Download necessary NLTK data (`punkt`, `wordnet`).
+    * Download Java dependencies (using Maven) into the `lib` directory.
+    * Compile the Java source code into the `classes` directory.
 
-## Windows (JDK 8, 9+)
-1. Download/Install/Use your preferred version of Java 8 or 9 or higher.  
-2. Download 64-bit Python 3.9 [here](https://www.python.org/downloads/), if you do not have 64-bit Python for Windows you may have errors.
-3. Download Apache Maven from your preferred Windows package manager ([package link](https://community.chocolatey.org/packages/maven), chocolatey installation guide [here](https://chocolatey.org/install#install-step1)), or you can do it  manually [here](https://maven.apache.org/download.cgi) and follow this install guide [here](https://stackoverflow.com/questions/38549614/how-to-install-maven-in-windows)
-4. Run this command to install the dependencies: `mvn dependency:copy-dependencies -DoutputDirectory=lib`
-5. Run `start_modern.bat` for the first time, and onwards you can run `start.bat` (if you have problems go back to `start_modern.bat`)
+    Execute the command using your **Python 3.9 or 3.10** executable:
 
-## MacOS / Linux
-1. Install Java/JDK 8 or higher (JDK 8 preferred)
-2. Install/Activate a Python 3.9 install from your preferred source (package manager/ manual / other tool).
-   - You may encounter issues with Python dependencies, conda is the recommended solution for Python.
-3. Install Apache Maven from your preferred source (package manager or manual)
-4. Run this command to install the dependencies: `mvn dependency:copy-dependencies -DoutputDirectory=lib`
-5. Run `build_and_start_modern.sh` to start the program for the first time, or if you change anything in between running the program.
-6. Run `start_modern.sh` after if you don't modify the source code
+    * **Windows (using the `py` launcher):**
+        ```bash
+        py -3.9 build.py setup
+        # OR
+        py -3.10 build.py setup
+        ```
+    * **Linux/macOS (assuming `python3.9` or `python3.10` is in PATH):**
+        ```bash
+        python3.9 build.py setup
+        # OR
+        python3.10 build.py setup
+        ```
+    * *(If `python` or `python3` directly maps to 3.9/3.10):*
+        ```bash
+        python build.py setup
+        ```
 
+## Running the Simulator
+
+Once the setup is complete, you can run the simulator using the `run` command with the build script. This will execute the compiled Java code using the correct classpath and necessary Java/JADE arguments, leveraging the Python virtual environment for any potential Python interactions needed by the Java code.
+
+Use the **same Python 3.9/3.10 executable** you used for setup:
+
+* **Linux/macOS:**
+    ```bash
+    python3.9 build.py run
+    # OR
+    python3.10 build.py run
+    ```
+* **Windows:**
+    ```bash
+    py -3.9 build.py run
+    # OR
+    py -3.10 build.py run
+    ```
+* *(If `python` or `python3` directly maps to 3.9/3.10):*
+    ```bash
+    python build.py run
+    ```
+## Build tool help
+
+If you are developing on the DSMP platform, some of the build tool commands may be confusing. Here is the "man page" for the command:
+
+```bash
+--- SocialNetworkSimulatorV3 Build/Run Script (Requires Python 3.9 or 3.10) ---
+usage: build.py [-h] [-v]
+                [{install,compile,run,rebuild,setup,clean,clean-java,clean-python,info,help}]
+
+Startup and Build Script for SocialNetworkSimulatorV3
+
+Automates setup, compilation, and running of the Java application.
+Handles Python venv, pip packages, Maven dependencies, and Java compilation.
+
+Usage:
+  python build.py <command> [-v | --help]
+
+Commands:
+  install       Set up Python venv, install Python/Java dependencies.
+  compile       Compile Java source code. Checks for JDK.
+  run           Run the Java application. Checks prerequisites.
+  rebuild       Clean Java classes, then compile.
+  setup         Run 'install' then 'compile'. Full first-time setup.
+  clean         Remove Java classes and Python venv.
+  clean-java    Remove compiled Java classes directory only.
+  clean-python  Remove Python virtual environment directory only.
+  info          Display detected versions (Java, Maven, Python) and paths.
+  help          Display this help message.
+
+Options:
+  -v, --verbose   Show detailed command execution output.
+  -h, --help      Show this help message and exit.
+
+Requires:
+  - Python 3.9 or 3.10 to run this script.
+  - Java Development Kit (JDK) 8 or higher (for 'compile', 'run').
+  - Apache Maven (for 'install').
+
+positional arguments:
+  {install,compile,run,rebuild,setup,clean,clean-java,clean-python,info,help}
+                        
+                        Action to perform (default: shows help):
+                          install       - Create/update Python venv (3.9 or 3.10), install pip/Maven deps.
+                          compile       - Compile Java code ('userRyersonU' -> 'classes'). Needs JDK 8+.
+                          run           - Execute Java app. Needs JDK 8+, classes, venv.
+                          rebuild       - Clean Java classes, then compile.
+                          setup         - Run 'install', then 'compile'. For initial setup.
+                          clean         - Remove Java classes and Python venv.
+                          clean-java    - Remove only compiled Java classes ('classes').
+                          clean-python  - Remove only Python venv ('.venv').
+                          info          - Show detected versions and project paths.
+                          help          - Display this help message.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v, --verbose         Enable detailed output.
+
+Example: python build.py setup -v
+```
+
+## Troubleshooting
+
+* **Command Not Found Errors:** Ensure Git, Python 3.9/3.10, JDK (java/javac), and Maven (mvn) are correctly installed and their directories are added to your system's PATH environment variable.
+* **Incorrect Python Version Error:** Double-check that you are running the `build.py` script using a Python 3.9 or 3.10 interpreter. Use `python --version` or `py --list` to verify.
+* **Build/Run Failures:**
+    * Run `python build.py info` to check if the script detects your tools correctly.
+    * Run the command with the `-v` (verbose) flag (e.g., `python build.py setup -v`) to see detailed output which might indicate the source of the problem.
+    * Try cleaning and rebuilding: `python build.py clean` followed by `python build.py setup`.
+    * Ensure you have a stable internet connection for downloading dependencies.
