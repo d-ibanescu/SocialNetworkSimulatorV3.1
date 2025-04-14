@@ -104,6 +104,9 @@ def check_tool(command, tool_name, install_url=None, required_for_cmd=None):
 
 def run_cmd(cmd, cwd=PROJECT_ROOT, check=True, capture_output_override=None, text=True, env=None, error_msg_on_fail="Command execution failed"):
     """Runs a command as a subprocess with improved error reporting."""
+    use_shell = False
+    if platform.system() == "Windows":
+        use_shell = True
     global VERBOSE
     cmd_str_display = ' '.join(map(str, cmd))
     pv(f"Running command: {cmd_str_display} in {cwd}")
@@ -120,6 +123,7 @@ def run_cmd(cmd, cwd=PROJECT_ROOT, check=True, capture_output_override=None, tex
         process = subprocess.run(
             cmd_list, cwd=cwd, check=False,
             stdout=stdout_pipe, stderr=stderr_pipe, text=text,
+            shell=use_shell,
             env=env or os.environ,
         )
 
