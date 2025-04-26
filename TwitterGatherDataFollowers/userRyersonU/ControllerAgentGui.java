@@ -1040,7 +1040,8 @@ public class ControllerAgentGui extends JFrame implements ActionListener {
 		 */
 		inputDbPanel.add(logo);
 
-		labNameLabel = new JLabel("DSMP Lab: Dr. Abdolreza Abhari, Sepideh Banihashemi");
+//		labNameLabel = new JLabel("DSMP Lab: Dr. Abdolreza Abhari, Sepideh Banihashemi");
+		labNameLabel = new JLabel("DSMP Lab: Dr. Abdolreza Abhari");
 		labNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		labNameLabel.setForeground(Color.WHITE);
 		labNameLabel.setFont(new Font("Arial",Font.PLAIN,20));
