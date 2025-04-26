@@ -100,4 +100,4 @@ REM java %JAVA_OPTS% -cp "lib/*;classes" jade.Boot %JADE_OPTS% controller:Twitte
 
 SET PYTHON_PATH=python
 SET SCRIPT_PATH=build.py
-%PYTHON_PATH% %SCRIPT_PATH% run
+%PYTHON_PATH% %SCRIPT_PATH% run -v
