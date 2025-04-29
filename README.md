@@ -1,4 +1,4 @@
-# DSMP Simulator Version 3.0
+# DSMP Simulator Version 3.1
 
 The DSMP Social Network Simulator can be used by researchers and users who want to benefit from the simple UI provided in this simulation tool to examine and compare different ML-based applications in a simulated social network environment. 
 
