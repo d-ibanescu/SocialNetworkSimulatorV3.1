@@ -7,7 +7,7 @@ The DSMP Social Network Simulator can be used by researchers and users who want 
 Before you begin, ensure you have the following software installed and configured on your system:
 
 1.  **Git:** For cloning the repository. ([Download Git](https://git-scm.com/downloads))
-2.  **Python (3.9 or 3.10):** The application requires **specifically Python 3.9 or 3.10**. Make sure the correct version is installed and accessible from your command line/terminal. ([Download Python](https://www.python.org/downloads/))
+2.  **Python (3.9 or 3.10):** The application requires **specifically Python 3.9 or 3.10**. Make sure the correct version is installed and accessible from your command line/terminal. ([Download Python](https://www.python.org/downloads/) [Download 3.9 Release](https://www.python.org/downloads/release/python-3913/))
     * *Tip:* Verify your installation by running `python --version` or `python3 --version`. On Windows, you might use `py --list` to see installed versions and `py -3.9` or `py -3.10` to invoke a specific one.
 3.  **Java Development Kit (JDK 8 or higher):** Required for compiling and running the Java code. JDK 8 is preferred, but 9+ should work with the script's compatibility flags. Ensure `java` and `javac` are in your system's PATH. ([Download OpenJDK - Adoptium recommended](https://adoptium.net/))
     * *Tip:* Verify by running `java -version` and `javac -version`.
@@ -142,3 +142,4 @@ Example: python build.py setup -v
     * Run the command with the `-v` (verbose) flag (e.g., `python build.py setup -v`) to see detailed output which might indicate the source of the problem.
     * Try cleaning and rebuilding: `python build.py clean` followed by `python build.py setup`.
     * Ensure you have a stable internet connection for downloading dependencies.
+
