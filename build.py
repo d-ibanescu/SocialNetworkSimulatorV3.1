@@ -388,43 +388,39 @@ def compile_java():
     classpath_str = os.pathsep.join(classpath_entries)
     pv(f"Classpath for compilation: {classpath_str}")
 
-    # Use argument files to avoid Windows command line length limits
-    import tempfile
+    # Use local argument files to avoid Windows command line length limits
+    pinfo("Creating local argument files for compilation...")
     
-    pinfo("Creating argument files for compilation...")
-    
-    # Create temporary files for arguments
-    sources_file = None
-    classpath_file = None
+    # Create argument files in project root with short names
+    sources_file = os.path.join(PROJECT_ROOT, "sources.txt")
+    classpath_file = os.path.join(PROJECT_ROOT, "classpath.txt")
     
     try:
         # Write source files to argument file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='_sources.txt', delete=False, encoding='utf-8') as sf:
+        with open(sources_file, 'w', encoding='utf-8') as sf:
             for java_file in java_files:
                 sf.write(f'"{java_file}"\n')  # Quote paths in case of spaces
-            sources_file = sf.name
-            pv(f"Created sources argument file: {sources_file}")
+        pv(f"Created sources argument file: {sources_file}")
         
         # Write classpath to argument file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='_classpath.txt', delete=False, encoding='utf-8') as cf:
+        with open(classpath_file, 'w', encoding='utf-8') as cf:
             cf.write(f'-cp\n"{classpath_str}"\n')  # Quote classpath in case of spaces
-            classpath_file = cf.name
-            pv(f"Created classpath argument file: {classpath_file}")
+        pv(f"Created classpath argument file: {classpath_file}")
         
-        # Build command using argument files
+        # Build command using local argument files (short paths)
         compile_cmd = [
             "javac",
             "-Xlint:unchecked",
             "-encoding", "UTF-8",
-            f"@{classpath_file}",
+            "@classpath.txt",    # Just the filename, not full path
             "-d", CLASSES_DIR,
-            f"@{sources_file}"
+            "@sources.txt"       # Just the filename, not full path
         ]
         
         pinfo("Starting Java compilation with argument files...")
         pv(f"Compilation command: {' '.join(compile_cmd)}")
         
-        run_cmd(compile_cmd, error_msg_on_fail="Java compilation failed")
+        run_cmd(compile_cmd, cwd=PROJECT_ROOT, error_msg_on_fail="Java compilation failed")
         pinfo("Java compilation finished successfully.")
         
     except Exception as e:
@@ -432,20 +428,14 @@ def compile_java():
              suggestion="Check Java source files and classpath. Ensure all dependencies are available.")
     
     finally:
-        # Clean up temporary argument files
-        if sources_file and os.path.exists(sources_file):
-            try:
-                os.unlink(sources_file)
-                pv(f"Cleaned up sources argument file: {sources_file}")
-            except Exception as e:
-                pwarn(f"Could not remove temporary file {sources_file}: {e}")
-        
-        if classpath_file and os.path.exists(classpath_file):
-            try:
-                os.unlink(classpath_file)
-                pv(f"Cleaned up classpath argument file: {classpath_file}")
-            except Exception as e:
-                pwarn(f"Could not remove temporary file {classpath_file}: {e}")
+        # Clean up local argument files
+        for arg_file in [sources_file, classpath_file]:
+            if os.path.exists(arg_file):
+                try:
+                    os.unlink(arg_file)
+                    pv(f"Cleaned up argument file: {arg_file}")
+                except Exception as e:
+                    pwarn(f"Could not remove argument file {arg_file}: {e}")
 
 def java_runtime_opts(java_major_version):
     """Constructs appropriate Java VM options based on the detected major version."""
