@@ -242,10 +242,10 @@ def ensure_venv():
 
     if not os.path.isdir(VENV_DIR) or not os.path.exists(venv_python_exe):
         pinfo(f"Virtual environment not found or incomplete. Creating new one...")
-        os.makedirs(os.path.dirname(VENV_DIR), exist_ok=True)
-        if os.path.exists(VENV_DIR):
-             pwarn(f"Removing existing incomplete venv directory: {VENV_DIR}")
-             shutil.rmtree(VENV_DIR)
+        # os.makedirs(os.path.dirname(VENV_DIR), exist_ok=True)
+        # if os.path.exists(VENV_DIR):
+        #      pwarn(f"Removing existing incomplete venv directory: {VENV_DIR}")
+        #      shutil.rmtree(VENV_DIR)
         try:
             venv.create(VENV_DIR, with_pip=True)
             pinfo("Virtual environment created successfully.")
@@ -254,7 +254,11 @@ def ensure_venv():
                       suggestion=f"Check permissions or disk space. Try running 'clean-python' then 'install'.")
         except Exception as e:
             perr(f"Failed to create virtual environment: {e}",
-                 suggestion="Ensure you have permissions to write to the project directory.")
+                 suggestion=f"Please create the virtual environment manually:\n"
+                           f"        {sys.executable} -m venv {VENV_DIR}\n"
+                           f"        # If that fails, try with --copies flag:\n"
+                           f"        {sys.executable} -m venv {VENV_DIR} --copies\n"
+                           f"        Then re-run: python build.py install")
     else:
         pinfo("Virtual environment found.")
         version_str, version_tuple = fetch_py_version(venv_python_exe)
@@ -306,7 +310,7 @@ def install():
     pinfo("Python packages installed successfully.")
 
     pinfo("Downloading NLTK data (punkt, wordnet)...")
-    nltk_cmd_str = "import nltk; nltk.download('punkt', quiet=True); nltk.download('wordnet', quiet=True)"
+    nltk_cmd_str = "import nltk; nltk.download('punkt_tab', quiet=True); nltk.download('wordnet', quiet=True)"
     result = run_cmd([python_exe, "-c", nltk_cmd_str], check=False, error_msg_on_fail="NLTK download command error")
     if result.returncode == 0:
          pinfo("NLTK data download command executed.")
@@ -346,7 +350,7 @@ def clean_py_env():
         pinfo(f"Directory not found, skipping removal: {VENV_DIR}")
 
 def compile_java():
-    """Compiles the Java source files using javac."""
+    """Compiles the Java source files using javac with argument files to avoid Windows command line limits."""
     pinfo("\n--- Compiling Java Source Code ---")
     check_tool("javac", "Java Compiler (javac)",
                install_url="Search for 'Install JDK 8 or higher'",
@@ -384,10 +388,64 @@ def compile_java():
     classpath_str = os.pathsep.join(classpath_entries)
     pv(f"Classpath for compilation: {classpath_str}")
 
-    compile_cmd = ["javac", "-Xlint:unchecked", "-encoding", "UTF-8", "-cp", classpath_str, "-d", CLASSES_DIR] + java_files
-    pinfo("Starting Java compilation...")
-    run_cmd(compile_cmd, error_msg_on_fail="Java compilation failed")
-    pinfo("Java compilation finished successfully.")
+    # Use argument files to avoid Windows command line length limits
+    import tempfile
+    
+    pinfo("Creating argument files for compilation...")
+    
+    # Create temporary files for arguments
+    sources_file = None
+    classpath_file = None
+    
+    try:
+        # Write source files to argument file
+        with tempfile.NamedTemporaryFile(mode='w', suffix='_sources.txt', delete=False, encoding='utf-8') as sf:
+            for java_file in java_files:
+                sf.write(f'"{java_file}"\n')  # Quote paths in case of spaces
+            sources_file = sf.name
+            pv(f"Created sources argument file: {sources_file}")
+        
+        # Write classpath to argument file
+        with tempfile.NamedTemporaryFile(mode='w', suffix='_classpath.txt', delete=False, encoding='utf-8') as cf:
+            cf.write(f'-cp\n"{classpath_str}"\n')  # Quote classpath in case of spaces
+            classpath_file = cf.name
+            pv(f"Created classpath argument file: {classpath_file}")
+        
+        # Build command using argument files
+        compile_cmd = [
+            "javac",
+            "-Xlint:unchecked",
+            "-encoding", "UTF-8",
+            f"@{classpath_file}",
+            "-d", CLASSES_DIR,
+            f"@{sources_file}"
+        ]
+        
+        pinfo("Starting Java compilation with argument files...")
+        pv(f"Compilation command: {' '.join(compile_cmd)}")
+        
+        run_cmd(compile_cmd, error_msg_on_fail="Java compilation failed")
+        pinfo("Java compilation finished successfully.")
+        
+    except Exception as e:
+        perr(f"Compilation failed with error: {e}",
+             suggestion="Check Java source files and classpath. Ensure all dependencies are available.")
+    
+    finally:
+        # Clean up temporary argument files
+        if sources_file and os.path.exists(sources_file):
+            try:
+                os.unlink(sources_file)
+                pv(f"Cleaned up sources argument file: {sources_file}")
+            except Exception as e:
+                pwarn(f"Could not remove temporary file {sources_file}: {e}")
+        
+        if classpath_file and os.path.exists(classpath_file):
+            try:
+                os.unlink(classpath_file)
+                pv(f"Cleaned up classpath argument file: {classpath_file}")
+            except Exception as e:
+                pwarn(f"Could not remove temporary file {classpath_file}: {e}")
 
 def java_runtime_opts(java_major_version):
     """Constructs appropriate Java VM options based on the detected major version."""
