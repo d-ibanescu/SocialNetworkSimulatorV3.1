@@ -396,15 +396,19 @@ def compile_java():
     classpath_file = os.path.join(PROJECT_ROOT, "classpath.txt")
     
     try:
-        # Write source files to argument file
+        # Write source files to argument file with forward slashes
         with open(sources_file, 'w', encoding='utf-8') as sf:
             for java_file in java_files:
-                sf.write(f'"{java_file}"\n')  # Quote paths in case of spaces
+                # Convert to forward slashes for Java compatibility
+                normalized_path = java_file.replace('\\', '/')
+                sf.write(f'"{normalized_path}"\n')
         pv(f"Created sources argument file: {sources_file}")
         
-        # Write classpath to argument file
+        # Write classpath to argument file with forward slashes
         with open(classpath_file, 'w', encoding='utf-8') as cf:
-            cf.write(f'-cp\n"{classpath_str}"\n')  # Quote classpath in case of spaces
+            # Convert classpath to forward slashes
+            normalized_classpath = classpath_str.replace('\\', '/')
+            cf.write(f'-cp\n"{normalized_classpath}"\n')
         pv(f"Created classpath argument file: {classpath_file}")
         
         # Build command using local argument files (short paths)
