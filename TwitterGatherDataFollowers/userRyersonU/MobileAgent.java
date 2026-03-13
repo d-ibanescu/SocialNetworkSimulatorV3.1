@@ -1422,8 +1422,8 @@ public class MobileAgent extends Agent {
 										// Trigger conversion script (ensure path is correct)
 										try {
 											 Process p = java.lang.Runtime.getRuntime().exec( "python "+ importantStuffDirName +"TXT2GMLv1.0/conversion.py" + "  " + importantStuffDirName +"edges-numbers");
-											// Add error/output stream handling if needed
-										} catch (/*IO*/Exception e_conv) {
+											p.waitFor();
+										} catch (Exception e_conv) {
 											System.err.println("Error executing conversion script");
 											e_conv.printStackTrace();
 										}
