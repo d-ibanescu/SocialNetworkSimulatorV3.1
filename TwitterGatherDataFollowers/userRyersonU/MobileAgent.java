@@ -1419,9 +1419,9 @@ public class MobileAgent extends Agent {
 											System.err.println("Error writing edges to edges-numbers.txt");
 											e_edge.printStackTrace();
 										}
-										// Trigger conversion script (ensure path is correct)
+										// Trigger conversion script with name-number file for complete node set
 										try {
-											 Process p = java.lang.Runtime.getRuntime().exec( "python "+ importantStuffDirName +"TXT2GMLv1.0/conversion.py" + "  " + importantStuffDirName +"edges-numbers");
+											 Process p = java.lang.Runtime.getRuntime().exec( "python "+ importantStuffDirName +"TXT2GMLv1.0/conversion.py" + "  " + importantStuffDirName +"edges-numbers" + " " + targetNameNumberFileName);
 											p.waitFor();
 										} catch (Exception e_conv) {
 											System.err.println("Error executing conversion script");
